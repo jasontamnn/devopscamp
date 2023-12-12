@@ -27,6 +27,8 @@ setup_jenkins() {
 
 setup_argocd() {
   helm upgrade --install -n argocd argocd argo/argo-cd --version 5.36.6 -f /tmp/argocd-values.yaml --create-namespace
+  kubectl apply -f /tmp/github-repository.yaml
+  kubectl apply -f /tmp/argocd-applicationset.yaml
 }
 
 setup_nginx_ingress() {
@@ -53,8 +55,8 @@ main () {
   setup_helm_repo
   setup_nginx_ingress
   setup_jenkins
-  setup_argocd
   setup_crossplane
+  setup_argocd
 }
 
 main

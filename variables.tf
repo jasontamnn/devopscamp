@@ -16,7 +16,7 @@ variable "github_username" {
 
 # change me!
 variable "github_personal_token" {
-  default = "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"
+  default = ""
 }
 
 variable "password" {

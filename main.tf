@@ -1,3 +1,25 @@
+module "k3s" {
+  source      = "./modules/k3s"
+  public_ip   = module.cvm.public_ip
+  private_ip  = module.cvm.private_ip
+  server_name = "terraform-k3s-server"
+}
+
+module "cvm" {
+  source        = "./modules/cvm"
+  secret_id     = var.secret_id
+  secret_key    = var.secret_key
+  password      = var.password
+}
+
+module "cloudflare" {
+  source = "./modules/cloudflare"
+  domain = var.domain
+  prefix = var.prefix
+  ip     = module.cvm.public_ip
+  values = ["jenkins", "argocd"]
+}
+
 resource "null_resource" "connect_ubuntu" {
   depends_on = [module.k3s]
   connection {
@@ -47,6 +69,16 @@ resource "null_resource" "connect_ubuntu" {
   }
 
   provisioner "file" {
+    destination = "/tmp/github-repository.yaml"
+    content = templatefile(
+      "${path.module}/yaml/github-repository.yaml.tpl",
+      {
+        "github_personal_token" : "${var.github_personal_token}"
+      }
+    )
+  }
+
+  provisioner "file" {
     destination = "/tmp/github-pat-secret-text.yaml"
     content = templatefile(
       "${path.module}/yaml/github-pat-secret-text.yaml.tpl",
@@ -83,6 +115,11 @@ resource "null_resource" "connect_ubuntu" {
     destination = "/tmp/provider.yaml"
   }
 
+  provisioner "file" {
+    source      = "${path.module}/yaml/argocd-application.yaml"
+    destination = "/tmp/argocd-application.yaml"
+  }
+
 
   provisioner "remote-exec" {
     inline = [
@@ -90,18 +127,4 @@ resource "null_resource" "connect_ubuntu" {
       "sh /tmp/init.sh",
     ]
   }
-}
-
-module "k3s" {
-  source      = "./modules/k3s"
-  public_ip   = module.cvm.public_ip
-  private_ip  = module.cvm.private_ip
-  server_name = "terraform-k3s-server"
-}
-
-module "cvm" {
-  source        = "./modules/cvm"
-  secret_id     = var.secret_id
-  secret_key    = var.secret_key
-  password      = var.password
 }
