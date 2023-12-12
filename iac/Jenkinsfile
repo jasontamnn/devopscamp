@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Deploy to Kubernetes') {
             when {
-                changeset "**/iac/*.yaml"
+                changeset "**/iac/yaml/*.yaml"
             }
         
         agent {
