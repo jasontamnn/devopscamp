@@ -13,8 +13,6 @@ pipeline {
 kind: Pod
 spec:
   serviceAccountName: jenkins
-  securityContext:
-    runAsUser: 1000
   containers:
   - name: kubectl
     image: jitesoft/kubectl:v1.28
