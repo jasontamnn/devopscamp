@@ -1,33 +1,30 @@
-// week-6 Demo1 使用 Jenkins 实施持续部署
 pipeline {
     agent none
     stages {
-        stage('Build result') {
+        stage('Deploy to Kubernetes') {
             when {
                 changeset "**/iac/*.yaml"
             }
-        }
-
-        stage('Deploy to Kubernetes') {
-            agent {
-                kubernetes {
-                    defaultContainer 'kubectl'
-                    yaml """
+        
+        agent {
+            kubernetes {
+                defaultContainer 'kubectl'
+                yaml """
 apiVersion: v1
 kind: Pod
 metadata:
-  labels:
-    app: kubectl
+labels:
+app: kubectl
 spec:
-  serviceAccountName: jenkins
-  containers:
-  - name: kubectl
-    image: jitesoft/kubectl:v1.28
-    command:
-    command:
-    - sleep
-    args:
-    - 99d
+serviceAccountName: jenkins
+containers:
+- name: kubectl
+image: jitesoft/kubectl:v1.28
+command:
+command:
+- sleep
+args:
+- 99d
 """
                 }
             }
