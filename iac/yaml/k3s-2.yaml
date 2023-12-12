@@ -12,15 +12,15 @@ spec:
       
       # Get availability images
       data "tencentcloud_images" "default" {
-        image_type = ["PUBLIC_IMAGE"]
-        os_name    = "ubuntu"
+          image_type = ["PUBLIC_IMAGE"]
+          os_name    = "ubuntu"
       }
 
       # Get availability instance types
       data "tencentcloud_instance_types" "default" {
         filter {
-          name   = "instance-family"
-          values = ["S5"]
+            name   = "instance-family"
+            values = ["S5"]
         }
 
         cpu_core_count = 2
@@ -29,80 +29,84 @@ spec:
 
       # Create security group
       resource "tencentcloud_security_group" "default" {
-        name        = "tf-security-group"
-        description = "make it accessible for both production and stage ports"
+          name        = "tf-security-group"
+          description = "make it accessible for both production and stage ports"
       }
 
       # Create security group rule allow ssh request
       resource "tencentcloud_security_group_lite_rule" "default" {
-        security_group_id = tencentcloud_security_group.default.id
-        ingress = [
-          "ACCEPT#0.0.0.0/0#22#TCP",
-          "ACCEPT#0.0.0.0/0#6443#TCP",
-        ]
+          security_group_id = tencentcloud_security_group.default.id
+          ingress = [
+              "ACCEPT#0.0.0.0/0#22#TCP",
+              "ACCEPT#0.0.0.0/0#6443#TCP",
+          ]
 
-        egress = [
-          "ACCEPT#0.0.0.0/0#ALL#ALL"
-        ]
+          egress = [
+              "ACCEPT#0.0.0.0/0#ALL#ALL"
+          ]
       }
 
       # Create a web server
       resource "tencentcloud_instance" "web" {
-        depends_on                 = [tencentcloud_security_group_lite_rule.default]
-        count                      = 1
-        instance_name              = "web server"
-        availability_zone          = data.tencentcloud_availability_zones_by_product.default.zones.0.name
-        image_id                   = data.tencentcloud_images.default.images.0.image_id
-        instance_type              = data.tencentcloud_instance_types.default.instance_types.0.instance_type
-        system_disk_type           = "CLOUD_PREMIUM"
-        system_disk_size           = 50
-        allocate_public_ip         = true
-        internet_max_bandwidth_out = 50
-        instance_charge_type       = "SPOTPAID"
-        orderly_security_groups    = [tencentcloud_security_group.default.id]
-        password                   = var.cvm_password
+          depends_on                 = [tencentcloud_security_group_lite_rule.default]
+          count                      = 1
+          instance_name              = "web server"
+          availability_zone          = data.tencentcloud_availability_zones_by_product.default.zones.0.name
+          image_id                   = data.tencentcloud_images.default.images.0.image_id
+          instance_type              = data.tencentcloud_instance_types.default.instance_types.0.instance_type
+          system_disk_type           = "CLOUD_PREMIUM"
+          system_disk_size           = 50
+          allocate_public_ip         = true
+          internet_max_bandwidth_out = 50
+          instance_charge_type       = "SPOTPAID"
+          orderly_security_groups    = [tencentcloud_security_group.default.id]
+          password                   = var.cvm_password
       }
-      
+
       variable "cvm_password" {
-        description = "user ubuntu password"
-        type        = string
+          description = "user ubuntu password"
+          type        = string
+      }
+
+      variable "cvm_user" {
+          description = "user ubuntu"
+          type        = string
       }
 
       module "k3s" {
-        source      = "xunleii/k3s/module"
-        k3s_version = "v1.28.1+k3s1"
-
-        cidr = {
-          pods = "10.0.0.0/16"
-          services = "10.1.0.0/16"
-        }
-
-        generate_ca_certificates = true
-        global_flags = [
-          "--tls-san ${tencentcloud_instance.web[0].public_ip}",
-          "--write-kubeconfig-mode 644",
-          "--disable=traefik",
-          "--kube-controller-manager-arg bind-address=0.0.0.0",
-          "--kube-proxy-arg metrics-bind-address=0.0.0.0",
-          "--kube-scheduler-arg bind-address=0.0.0.0"
-        ]
-        k3s_install_env_vars = {}
-
-        servers = {
-          "${var.server_name}" = {
-            ip = ${tencentcloud_instance.web[0].private_ip}
-            connection = {
-              timeout  = "60s"
-              type     = "ssh"
-              host     = ${tencentcloud_instance.ubuntu[0].public_ip}
-              password = var.password
-              user     = var.user
-            }
+          source      = "xunleii/k3s/module"
+          k3s_version = "v1.28.1+k3s1"
+          cidr = {
+              pods = "10.0.0.0/16"
+              services = "10.1.0.0/16"
           }
-        }
+
+          generate_ca_certificates = true
+          global_flags = [
+              "--tls-san ${tencentcloud_instance.web[0].public_ip}",
+              "--write-kubeconfig-mode 644",
+              "--disable=traefik",
+              "--kube-controller-manager-arg bind-address=0.0.0.0",
+              "--kube-proxy-arg metrics-bind-address=0.0.0.0",
+              "--kube-scheduler-arg bind-address=0.0.0.0"
+          ]
+
+          k3s_install_env_vars = {}
+          servers = {
+              "${var.server_name}" = {
+              ip = "${tencentcloud_instance.web[0].private_ip}"
+                  connection = {
+                      timeout  = "60s"
+                      type     = "ssh"
+                      host     = "${tencentcloud_instance.ubuntu[0].public_ip}"
+                      password = var.password
+                      user     = ""
+                  }
+              }
+          }
       }
     vars:
       - key: cvm_password
         value: password123
-      - key: user
+      - key: cvm_user
         value: ubuntu
