@@ -116,8 +116,8 @@ resource "null_resource" "connect_ubuntu" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/yaml/argocd-application.yaml"
-    destination = "/tmp/argocd-application.yaml"
+    source      = "${path.module}/yaml/argocd-applicationset.yaml"
+    destination = "/tmp/argocd-applicationset.yaml"
   }
 
 

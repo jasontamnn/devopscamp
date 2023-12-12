@@ -24,8 +24,8 @@ data "tencentcloud_instance_types" "default" {
     values = ["S5"]
   }
 
-  cpu_core_count = 2
-  memory_size    = 4
+  cpu_core_count = 4
+  memory_size    = 8
 }
 
 # Create security group

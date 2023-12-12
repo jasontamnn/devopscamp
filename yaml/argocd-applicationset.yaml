@@ -11,7 +11,7 @@ spec:
             use: prod
   template:
     metadata:
-      name: '{{name}}-bookinfo' # 'name' field of the Secret
+      name: '{{name}}-bookinfo'
     spec:
       project: "default"
       source:
@@ -19,7 +19,7 @@ spec:
         targetRevision: HEAD
         path: bookinfo
       destination:
-        server: '{{server}}' # 'server' field of the secret
+        server: '{{server}}'
         namespace: default
       syncPolicy:
         automated:

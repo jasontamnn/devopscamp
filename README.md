@@ -18,4 +18,7 @@
 
 
 - CrossPlane  第五周: 基础设施即代码
-- Jenkins加入Github仓库 
+- ArgoCD 加入集群
+- ArgoCD 加入仓库
+- Jenkins加入Github仓库
+- 集群 1 的 Proxy 作为流量入口对外提供服务，对部署在集群 2 和集群 3 的无状态示例应用 Bookinfo 做负载均衡

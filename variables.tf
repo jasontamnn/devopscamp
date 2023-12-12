@@ -24,7 +24,7 @@ variable "password" {
 }
 
 variable "prefix" {
-  default = "jasontam"
+  default = "wick"
 }
 
 variable "domain" {
