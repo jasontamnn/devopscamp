@@ -25,8 +25,8 @@ spec:
           values = ["S5"]
         }
 
-        cpu_core_count = 4
-        memory_size    = 8
+        cpu_core_count = 2
+        memory_size    = 4
       }
 
       # Create security group
