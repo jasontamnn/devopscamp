@@ -10,21 +10,19 @@ pipeline {
             kubernetes {
                 defaultContainer 'kubectl'
                 yaml """
-apiVersion: v1
 kind: Pod
-metadata:
-labels:
-app: kubectl
 spec:
-serviceAccountName: jenkins
-containers:
-- name: kubectl
-image: jitesoft/kubectl:v1.28
-command:
-command:
-- sleep
-args:
-- 99d
+  serviceAccountName: jenkins
+  securityContext:
+    runAsUser: 1000
+  containers:
+  - name: kubectl
+    image: jitesoft/kubectl:v1.28
+    imagePullPolicy: Always
+    command:
+    - sleep
+    args:
+    - 99d
 """
                 }
             }
