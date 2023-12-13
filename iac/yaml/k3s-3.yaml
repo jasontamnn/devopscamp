@@ -1,7 +1,7 @@
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
-  name: k3s-2
+  name: k3s-3
 spec:
   forProvider:
     source: Inline
@@ -38,6 +38,8 @@ spec:
           security_group_id = tencentcloud_security_group.default.id
           ingress = [
               "ACCEPT#0.0.0.0/0#22#TCP",
+              "ACCEPT#0.0.0.0/0#80#TCP",
+              "ACCEPT#0.0.0.0/0#443#TCP",
               "ACCEPT#0.0.0.0/0#6443#TCP",
           ]
 
@@ -78,8 +80,8 @@ spec:
         k3s_version = "v1.28.1+k3s1"
       
         cidr = {
-          pods = "10.98.0.0/16"
-          services = "10.99.0.0/16"
+          pods = "10.88.0.0/16"
+          services = "10.89.0.0/16"
         }
       
         generate_ca_certificates = true

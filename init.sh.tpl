@@ -23,6 +23,7 @@ setup_jenkins() {
     kubectl apply -f /tmp/jenkins-service-account.yaml -n jenkins
     # apply jenkins github pull secret
     kubectl apply -f /tmp/github-personal-token.yaml -n jenkins
+    kubectl apply -f /tmp/github-pat-secret-text.yaml -n jenkins
 }
 
 setup_argocd() {
