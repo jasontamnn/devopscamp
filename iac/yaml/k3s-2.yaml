@@ -23,13 +23,13 @@ spec:
             values = ["S5"]
         }
 
-        cpu_core_count = 2
-        memory_size    = 4
+        cpu_core_count = 4
+        memory_size    = 8
       }
 
       # Create security group
       resource "tencentcloud_security_group" "default" {
-          name        = "tf-security-group"
+          name        = "tf-2-security-group"
           description = "make it accessible for both production and stage ports"
       }
 
@@ -38,6 +38,8 @@ spec:
           security_group_id = tencentcloud_security_group.default.id
           ingress = [
               "ACCEPT#0.0.0.0/0#22#TCP",
+              "ACCEPT#0.0.0.0/0#80#TCP",
+              "ACCEPT#0.0.0.0/0#443#TCP",
               "ACCEPT#0.0.0.0/0#6443#TCP",
           ]
 

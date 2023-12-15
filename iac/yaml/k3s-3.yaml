@@ -23,13 +23,13 @@ spec:
             values = ["S5"]
         }
 
-        cpu_core_count = 2
-        memory_size    = 4
+        cpu_core_count = 4
+        memory_size    = 8
       }
 
       # Create security group
       resource "tencentcloud_security_group" "default" {
-          name        = "tf-security-group"
+          name        = "tf-3-security-group"
           description = "make it accessible for both production and stage ports"
       }
 
@@ -52,7 +52,7 @@ spec:
       resource "tencentcloud_instance" "ubuntu" {
           depends_on                 = [tencentcloud_security_group_lite_rule.default]
           count                      = 1
-          instance_name              = "terrform-k3s-2"
+          instance_name              = "terrform-k3s-3"
           availability_zone          = data.tencentcloud_availability_zones_by_product.default.zones.0.name
           image_id                   = data.tencentcloud_images.default.images.0.image_id
           instance_type              = data.tencentcloud_instance_types.default.instance_types.0.instance_type
