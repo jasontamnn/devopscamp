@@ -1,0 +1,10 @@
+# For cluster2 endpoints
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster2-ingress-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+  clusterIP: None
