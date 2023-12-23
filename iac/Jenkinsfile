@@ -27,7 +27,7 @@ spec:
 
             steps {
                 container('kubectl') {
-                    sh 'kubectl apply -f iac/yaml'
+                    sh 'kubectl delete -f iac/yaml'
                 }
             }
         }
